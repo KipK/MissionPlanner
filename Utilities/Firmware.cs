@@ -588,7 +588,7 @@ namespace MissionPlanner.Utilities
                     {
                         up.verifyotp();
                     }
-                    catch { CustomMessageBox.Show("This board is not from 3DR but no problem so far we like open source, in't it ? ", "CloneHawk detected"); up.skipotp = true; }
+                    catch { CustomMessageBox.Show("This board is not from 3DR but no problem so far we like open source, isn't it ? ", "CloneHawk detected"); up.skipotp = true; }
 
                     try
                     {
