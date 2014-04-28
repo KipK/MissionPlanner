@@ -1639,6 +1639,9 @@ namespace MissionPlanner.GCSViews
                         // reupload this point.
                         ans = port.setWP(temp, (ushort)(a + 1), frame, 0);
                     } 
+
+
+
                     if (ans == MAVLink.MAV_MISSION_RESULT.MAV_MISSION_NO_SPACE) 
                     {
                         e.ErrorMessage = "Upload failed, please reduce the number of wp's";
@@ -1653,7 +1656,8 @@ namespace MissionPlanner.GCSViews
                     {
                         // invalid sequence can only occur if we failed to see a responce from the apm when we sent the request.
                         // therefore it did see the request and has moved on that step, and so do we.
-                    }
+                        continue;
+                    } 
                     if (ans != MAVLink.MAV_MISSION_RESULT.MAV_MISSION_ACCEPTED)
                     {
                         e.ErrorMessage = "Upload wps failed " + Commands.Rows[a].Cells[Command.Index].Value.ToString() + " " + Enum.Parse(typeof(MAVLink.MAV_MISSION_RESULT), ans.ToString());
@@ -1694,8 +1698,12 @@ namespace MissionPlanner.GCSViews
         {
             quickadd = true;
 
+
+            // mono fix
+            Commands.CurrentCell = null;
+
             while (Commands.Rows.Count > 0 && !append)
-                Commands.Rows.RemoveAt(0);
+                Commands.Rows.Clear();
 
             if (cmds.Count == 0)
             {
@@ -3070,11 +3078,10 @@ namespace MissionPlanner.GCSViews
         {
             quickadd = true;
 
-            try
-            {
-                Commands.Rows.Clear();
-            }
-            catch { } // this fails on mono - Exception System.ArgumentOutOfRangeException: Index is less than 0 or more than or equal to the list count. Parameter name: index
+            // mono fix
+            Commands.CurrentCell = null;
+
+            Commands.Rows.Clear();
 
             selectedrow = 0;
             quickadd = false;
@@ -5510,9 +5517,12 @@ Column 1: Field type (RALLY is the only one at the moment -- may have RALLY_LAND
             string easting = "578994";
             string northing = "6126244";
 
-            InputBox.Show("Zone", "Enter Zone. (eg 50S, 11N)", ref zone);
-            InputBox.Show("Easting", "", ref easting);
-            InputBox.Show("Northing", "", ref northing);
+            if (InputBox.Show("Zone", "Enter Zone. (eg 50S, 11N)", ref zone) != DialogResult.OK)
+                return;
+            if (InputBox.Show("Easting", "Easting", ref easting)!= DialogResult.OK)
+                return;
+            if (InputBox.Show("Northing", "Northing", ref northing) != DialogResult.OK)
+                return;
 
             string newzone = zone.ToLower().Replace('s',' ');
             newzone = newzone.ToLower().Replace('n',' ');
@@ -5662,11 +5672,19 @@ Column 1: Field type (RALLY is the only one at the moment -- may have RALLY_LAND
 
         private void switchDockingToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            panelAction.Dock = DockStyle.Bottom;
-            panelAction.Height = 120;
-            panelWaypoints.Dock = DockStyle.Right;
-            panelWaypoints.Width = this.Width / 2;
+            if (panelAction.Dock == DockStyle.Bottom)
+            {
+                panelAction.Dock = DockStyle.Right;
+                panelWaypoints.Dock = DockStyle.Bottom;
+            }
+            else
+            {
 
+                panelAction.Dock = DockStyle.Bottom;
+                panelAction.Height = 120;
+                panelWaypoints.Dock = DockStyle.Right;
+                panelWaypoints.Width = this.Width / 2;
+            }
         }
     }
 }
