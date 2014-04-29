@@ -224,7 +224,7 @@ DbgBdR6wBz9qdfRRoQIDAQAB");
                         else
                         {
                             print("Invalid Key");
-                            throw new Exception("Invalid Board");
+                            return true;
                         }
                     }
                     else
@@ -235,7 +235,7 @@ DbgBdR6wBz9qdfRRoQIDAQAB");
 
                 }
                 catch { print("Failed to read OTP"); }
-                throw new Exception("Failed to read OTP");
+                //throw new Exception("Failed to read OTP");
             }
 
             // not board type 9
